@@ -23,15 +23,28 @@ public class DisciplinaController {
     }
 
     // --------------------------------------
+    // CADASTRAR DISCIPLINA  ✔✔✔ ADICIONADO
+    // --------------------------------------
+    @PostMapping
+    public Disciplina cadastrar(@RequestBody Disciplina disciplina) {
+
+        // garante que o professor existe
+        Professor prof = professorService.findById(disciplina.getProfessor().getId());
+        disciplina.setProfessor(prof);
+
+        return disciplinaService.save(disciplina);
+    }
+
+    // --------------------------------------
     // BUSCAR POR CÓDIGO
     // --------------------------------------
     @GetMapping("/{codigo}")
     public Disciplina buscarPorCodigo(@PathVariable String codigo) {
-        return disciplinaService.findByCodigo(codigo);  // <--- Nome correto
+        return disciplinaService.findByCodigo(codigo);
     }
 
     // --------------------------------------
-    // LISTAR TODAS AS DISCIPLINAS
+    // LISTAR TODAS
     // --------------------------------------
     @GetMapping("/todas")
     public List<Disciplina> listarTodas() {
@@ -43,6 +56,7 @@ public class DisciplinaController {
     // --------------------------------------
     @GetMapping("/professor/{idProfessor}")
     public List<Disciplina> listarPorProfessor(@PathVariable Long idProfessor) {
+
         Professor professor = professorService.findById(idProfessor);
 
         if (professor == null) {

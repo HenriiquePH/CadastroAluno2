@@ -17,4 +17,7 @@ public interface AlunoDisciplinaRepository extends JpaRepository<AlunoDisciplina
 
     // Busca todas as disciplinas de um aluno (para o boletim)
     List<AlunoDisciplina> findByAluno(Aluno aluno);
+
+    // 👉 NECESSÁRIO PARA O LANÇAMENTO DE NOTAS
+    List<AlunoDisciplina> findByDisciplinaId(Long idDisciplina);
 }

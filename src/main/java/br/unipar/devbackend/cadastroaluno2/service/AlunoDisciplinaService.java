@@ -9,6 +9,8 @@ import br.unipar.devbackend.cadastroaluno2.model.Disciplina;
 import br.unipar.devbackend.cadastroaluno2.repository.AlunoDisciplinaRepository;
 import br.unipar.devbackend.cadastroaluno2.enums.SituacaoAluno;
 
+import java.util.List;
+
 @Service
 public class AlunoDisciplinaService {
 
@@ -23,6 +25,11 @@ public class AlunoDisciplinaService {
         return alunoDisciplinaRepository.save(alunoDisciplina);
     }
 
+    // 👉 NOVO MÉTODO NECESSÁRIO PARA O FRONT
+    public List<AlunoDisciplina> findByDisciplina(Long idDisciplina) {
+        return alunoDisciplinaRepository.findByDisciplinaId(idDisciplina);
+    }
+
     // Atualiza nota e faltas de 1º bimestre
     public AlunoDisciplina atualizar1Bimestre(AlunoDisciplina ad, Double nota, Integer faltas) {
         ad.setNota1Bim(nota);
@@ -32,40 +39,21 @@ public class AlunoDisciplinaService {
         return alunoDisciplinaRepository.save(ad);
     }
 
-    // Atualiza nota e faltas de 2º bimestre e calcula situação
+    // Atualiza nota e faltas de 2º bimestre
     public AlunoDisciplina atualizar2Bimestre(AlunoDisciplina ad, Double nota, Integer faltas) {
         ad.setNota2Bim(nota);
         ad.setFaltas2Bim(faltas);
 
-        // Pegando notas individuais de forma tradicional
-        double nota1 = 0.0;
-        if (ad.getNota1Bim() != null) {
-            nota1 = ad.getNota1Bim();
-        }
+        double nota1 = (ad.getNota1Bim() != null) ? ad.getNota1Bim() : 0.0;
+        double nota2 = (ad.getNota2Bim() != null) ? ad.getNota2Bim() : 0.0;
 
-        double nota2 = 0.0;
-        if (ad.getNota2Bim() != null) {
-            nota2 = ad.getNota2Bim();
-        }
-
-        // Calculando média
         double media = (nota1 + nota2) / 2.0;
 
-        // Pegando faltas individuais de forma tradicional
-        int faltas1 = 0;
-        if (ad.getFaltas1Bim() != null) {
-            faltas1 = ad.getFaltas1Bim();
-        }
-
-        int faltas2 = 0;
-        if (ad.getFaltas2Bim() != null) {
-            faltas2 = ad.getFaltas2Bim();
-        }
-
+        int faltas1 = (ad.getFaltas1Bim() != null) ? ad.getFaltas1Bim() : 0;
+        int faltas2 = (ad.getFaltas2Bim() != null) ? ad.getFaltas2Bim() : 0;
         int totalFaltas = faltas1 + faltas2;
 
-        // Verificando aprovação
-        if (media >= 6.0 && totalFaltas <= 75) { // Exemplo: 25% de faltas permitido
+        if (media >= 6.0 && totalFaltas <= 75) {
             ad.setSituacao(SituacaoAluno.APROVADO);
             ad.setMatriculado(false);
         } else {
